@@ -8,6 +8,7 @@ const {mongoose} = require('./db/mongoose');
 const {Todo} = require('./models/todos');
 const {User} = require('./models/users');
 
+const port = process.env.PORT || 3000;
 
 app.post('/todos', (req, res)=> {
     var newTodo = new Todo({
@@ -68,4 +69,6 @@ app.get('/todos/:id', (req, res) => {
     })
 });
 
-app.listen(3000);
+app.listen(port, ()=> {
+    console.log(`Server started on port ${port}`);
+});
