@@ -44,13 +44,13 @@ app.get('/todos', (req, res)=> {
     
 });
 
-app.get('/users', (req, res) => {
-    User.find().then((users) => {
-        res.send({users});
-    }, (e) => {
-        res.status(400).send(e);
-    })
-});
+// app.get('/users', (req, res) => {
+//     User.find().then((users) => {
+//         res.send({users});
+//     }, (e) => {
+//         res.status(400).send(e);
+//     })
+// });
 
 app.get('/todos/:id', (req, res) => {
     const id = req.params.id;
@@ -68,6 +68,23 @@ app.get('/todos/:id', (req, res) => {
         res.status(400).send(e);
     })
 });
+
+app.delete('/todos/:id', (req, res) => {
+    const id = req.params.id;
+    if(!ObjectId.isValid(id)) {
+        res.send('Invalid id');
+        return;
+    }
+    Todo.findByIdAndRemove(id).then((todos) => {
+        if (!todos) {
+            res.send('Id not matched');
+            return;
+        }
+        res.send({ todos });
+    }, (e) => {
+        res.status(400).send(e);
+    })
+})
 
 app.listen(port, ()=> {
     console.log(`Server started on port ${port}`);
