@@ -68,10 +68,10 @@ UserSchema.pre('save', function(next) {
     if(this.isModified('password')) {
         var user = this;
         var password = user.password;
-        console.log('hashing:', password);
+        // console.log('hashing:', password);
         bcrypt.genSalt(10, function(err, salt) {
-            bcrypt.hash('password', salt, function(err, hash) {
-                console.log('hashed:', hash);
+            bcrypt.hash(password, salt, function(err, hash) {
+                // console.log('hashed:', hash);
                 user.password = hash;
                 next();
                 
@@ -81,6 +81,7 @@ UserSchema.pre('save', function(next) {
     else {
         next();
     }
-})
+});
+
 var User = mongoose.model('Users', UserSchema); 
 module.exports = {User};

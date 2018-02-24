@@ -2,6 +2,7 @@ const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectId} = require('mongodb');
+const bcrypt = require('bcryptjs');
 var app = express();
 app.use(bodyParser.json());
 
@@ -109,7 +110,7 @@ app.post('/users', (req, res) => {
     });
 
     newUser.save().then((req, res) => {
-        console.log('newuser pass :',newUser.password);
+        // console.log('newuser pass :',newUser.password);
         return newUser.generateAuthToken();
     }).then((token) => {
         res.header('x-auth', token).send(newUser);
@@ -120,6 +121,26 @@ app.post('/users', (req, res) => {
 
 app.get('/users/me', authenticate, (req, res)=> {
     res.send(req.user);
+});
+
+app.post('/users/login', (req, res)=> {
+    var email = req.body.email;
+    var password = req.body.password;
+    console.log(email);
+    User.findOne({email}).then((user)=> {
+        bcrypt.compare(password, user.password, (err, val)=> {
+            if(val) {
+                return user.generateAuthToken().then((token)=> {
+                    res.header('x-auth', token).send(user);
+                })
+            }
+            else {
+                res.status(400).send('Wrong password');
+            }
+        })
+    }).catch((e)=> {
+        res.status(400).send(e);
+    })
 });
 
 app.listen(port, ()=> {
