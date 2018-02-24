@@ -8,6 +8,7 @@ app.use(bodyParser.json());
 const {mongoose} = require('./db/mongoose');
 const {Todo} = require('./models/todos');
 const {User} = require('./models/users');
+const {authenticate} = require('./middlewares/authenticate');
 
 const port = process.env.PORT || 3000;
 
@@ -108,6 +109,7 @@ app.post('/users', (req, res) => {
     });
 
     newUser.save().then((req, res) => {
+        console.log('newuser pass :',newUser.password);
         return newUser.generateAuthToken();
     }).then((token) => {
         res.header('x-auth', token).send(newUser);
@@ -116,6 +118,9 @@ app.post('/users', (req, res) => {
         });
 });
 
+app.get('/users/me', authenticate, (req, res)=> {
+    res.send(req.user);
+});
 
 app.listen(port, ()=> {
     console.log(`Server started on port ${port}`);
